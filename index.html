@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FriendTime - Find Free Time with Friends</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --accent: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4bb543;
+            --danger: #ff4757;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --purple-light: #8a2be2;
+            --blue-light: #1e90ff;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,192C1248,192,1344,128,1392,96L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+            background-position: bottom;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            color: white;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(to right, #ffffff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            padding: 25px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h2 {
+            color: var(--secondary);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(106, 17, 203, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+        }
+
+        .card h2 i {
+            color: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .friend-selector {
+            margin-bottom: 20px;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            font-size: 1rem;
+            background-color: #f9f9f9;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236a11cb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 16px;
+        }
+
+        select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.2);
+        }
+
+        .days-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 12px;
+            scrollbar-width: thin;
+        }
+
+        .days-selector::-webkit-scrollbar {
+            height: 5px;
+        }
+
+        .days-selector::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .day-btn {
+            padding: 10px 16px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            font-weight: 600;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+            flex-shrink: 0;
+        }
+
+        .day-btn.active {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 5px 12px rgba(106, 17, 203, 0.4);
+        }
+
+        .day-btn:hover:not(.active) {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .timetable {
+            margin-top: 15px;
+        }
+
+        .time-slots {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            gap: 10px;
+        }
+
+        .time-label {
+            font-weight: 600;
+            padding: 12px;
+            text-align: right;
+            border-right: 2px solid rgba(106, 17, 203, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            background: rgba(106, 17, 203, 0.05);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .slot {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            text-align: center;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+            font-size: 0.9rem;
+        }
+
+        .slot:hover {
+            transform: scale(1.02);
+        }
+
+        .free {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+
+        .busy {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+
+        .btn {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            box-shadow: 0 6px 15px rgba(37, 117, 252, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(37, 117, 252, 0.5);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .mutual-friends {
+            margin-top: 25px;
+        }
+
+        .friend-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 10px;
+            margin-bottom: 12px;
+            transition: all 0.3s;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--primary);
+        }
+
+        .friend-item:hover {
+            background: linear-gradient(135deg, #e9ecef, #dee2e6);
+            transform: translateX(5px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 1.1rem;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .friend-info {
+            flex: 1;
+        }
+
+        .friend-name {
+            font-weight: 700;
+            margin-bottom: 6px;
+            font-size: 1rem;
+        }
+
+        .free-now {
+            color: #2e7d32;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+
+        .no-friends {
+            text-align: center;
+            padding: 25px;
+            color: #757575;
+            font-style: italic;
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+
+        .current-time {
+            background: linear-gradient(135deg, var(--info), #1e90ff);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(23, 162, 184, 0.3);
+            font-size: 0.9rem;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            padding: 20px;
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .instructions {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .instructions h3 {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+        }
+
+        .instructions ol {
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+            font-size: 1rem;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(106, 17, 203, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 8px rgba(106, 17, 203, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(106, 17, 203, 0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .days-selector {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .time-slots {
+                grid-template-columns: 90px 1fr;
+            }
+            
+            .time-label, .slot {
+                padding: 10px 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            header h1 {
+                font-size: 1.7rem;
+            }
+            
+            header p {
+                font-size: 0.95rem;
+            }
+            
+            .card h2 {
+                font-size: 1.3rem;
+            }
+            
+            .time-slots {
+                grid-template-columns: 80px 1fr;
+                gap: 8px;
+            }
+            
+            .time-label, .slot {
+                padding: 8px 5px;
+                font-size: 0.85rem;
+            }
+            
+            .btn {
+                padding: 12px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>FriendTime</h1>
+            <p>Find when your friends are free and plan meetups easily</p>
+        </header>
+
+        <div class="instructions">
+            <h3><i class="fas fa-info-circle"></i> How to Use</h3>
+            <ol>
+                <li>Select a friend to view their timetable</li>
+                <li>Switch between days to see different schedules</li>
+                <li>Click "Find Friends Free Now" to see who's available</li>
+                <li>Plan your meetups based on mutual free time</li>
+            </ol>
+        </div>
+
+        <div class="app-container">
+            <div class="card">
+                <h2><i class="fas fa-user-friends"></i> Friend's Timetable</h2>
+                
+                <div class="friend-selector">
+                    <select id="friendSelect">
+                        <option value="">Select a friend</option>
+                        <option value="akansh">Akansh Tiwary</option>
+                        <option value="ayush">Ayush Kumar</option>
+                        <option value="aryan1">Aryan Raj Lambu</option>
+                        <option value="aryan2">Aryan Aimless</option>
+                        <option value="shambhu">Shambhudhan Pal</option>
+                        <option value="rohan">Rohan</option>
+                        <option value="prateek">Prateek Ray</option>
+                        <option value="chainti">Pathlawath Chainti</option>
+                        <option value="adarsh">Adarsh</option>
+                    </select>
+                </div>
+
+                <div class="days-selector">
+                    <button class="day-btn active" data-day="monday">Mon</button>
+                    <button class="day-btn" data-day="tuesday">Tue</button>
+                    <button class="day-btn" data-day="wednesday">Wed</button>
+                    <button class="day-btn" data-day="thursday">Thu</button>
+                    <button class="day-btn" data-day="friday">Fri</button>
+                </div>
+
+                <div class="timetable">
+                    <h3 id="currentDay">Monday Schedule</h3>
+                    <div class="time-slots" id="timetableContainer">
+                        <!-- Timetable will be dynamically generated here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-clock"></i> Find Free Friends</h2>
+                
+                <div class="current-time pulse">
+                    <i class="fas fa-clock"></i>
+                    <span id="currentTimeDisplay">Current Time: Loading...</span>
+                </div>
+                
+                <p>See which friends are free right now to hang out with.</p>
+                
+                <button class="btn" id="findFriendsBtn">
+                    <i class="fas fa-search"></i> Find Friends Free Now
+                </button>
+
+                <div class="mutual-friends">
+                    <h3>Available Friends</h3>
+                    <div id="friendsList">
+                        <!-- Friend items will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>FriendTime &copy; 2023 | Made with <i class="fas fa-heart" style="color: #ff4d4d;"></i> for college friends</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const friendSelect = document.getElementById('friendSelect');
+            const findFriendsBtn = document.getElementById('findFriendsBtn');
+            const friendsList = document.getElementById('friendsList');
+            const dayButtons = document.querySelectorAll('.day-btn');
+            const timetableContainer = document.getElementById('timetableContainer');
+            const currentDayDisplay = document.getElementById('currentDay');
+            const currentTimeDisplay = document.getElementById('currentTimeDisplay');
+            
+            let currentDay = 'monday';
+            let currentTime = new Date();
+            
+            // Update current time display
+            function updateCurrentTime() {
+                currentTime = new Date();
+                const timeString = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                currentTimeDisplay.textContent = `Current Time: ${timeString}`;
+            }
+            
+            // Update time every second
+            setInterval(updateCurrentTime, 1000);
+            updateCurrentTime();
+            
+            // Sample data for friends and their weekly schedules
+            const friendsData = {
+                akansh: {
+                    name: "Akansh Tiwary",
+                    timetable: {
+                        monday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "Int222 36-505",
+                            "11:00-12:00": "Int222 36-505",
+                            "12:00-1:00": "Peas05 37-809",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "Peas05 37-703",
+                            "3:00-4:00": "No class",
+                            "4:00-5:00": "No class"
+                        },
+                        tuesday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "No class",
+                            "11:00-12:00": "Pev301 36-505",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "No class",
+                            "4:00-5:00": "No class"
+                        },
+                        wednesday: {
+                            "9:00-10:00": "Pev301 36-503",
+                            "10:00-11:00": "Int252 34-703",
+                            "11:00-12:00": "Int252 34-703",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "Ger107 37-808",
+                            "2:00-3:00": "Pev301 36-502A",
+                            "3:00-4:00": "Pev301 36-502A",
+                            "4:00-5:00": "No class"
+                        },
+                        thursday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "No class",
+                            "11:00-12:00": "No class",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "Ger107 37-808",
+                            "2:00-3:00": "Int222 34-803",
+                            "3:00-4:00": "Int222 34-803",
+                            "4:00-5:00": "No class"
+                        },
+                        friday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "No class",
+                            "11:00-12:00": "No class",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "Ger107 37-808",
+                            "2:00-3:00": "Int252 36-502A",
+                            "3:00-4:00": "Int252 36-502A",
+                            "4:00-5:00": "No class"
+                        }
+                    }
+                },
+                ayush: {
+                    name: "Ayush Kumar",
+                    timetable: {
+                        monday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "No class",
+                            "11:00-12:00": "No class",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "INT252 36-502A",
+                            "2:00-3:00": "INT252 36-502A",
+                            "3:00-4:00": "INT222 36-502A",
+                            "4:00-5:00": "INT222 36-502A"
+                        },
+                        tuesday: {
+                             "9:00-10:00": "No class",
+                            "10:00-11:00": "No class",
+                            "11:00-12:00": "No class",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "No class",
+                            "4:00-5:00": "No class"
+                        },
+                        wednesday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "No class",
+                            "11:00-12:00": "No class",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "GER107 37-808",
+                            "2:00-3:00": "PEV301 37-701",
+                            "3:00-4:00": "INT222 37-701",
+                            "4:00-5:00": "INT222 37-701"
+                        },
+                        thursday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "PEAS05 37-603",
+                            "11:00-12:00": "PEAS05 37-603",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "GER107 37-808",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "PEV301 33-602",
+                            "4:00-5:00": "PEV301 33-602"
+                        },
+                        friday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "No class",
+                            "11:00-12:00": "No class",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "GER107 37-808",
+                            "2:00-3:00": "INT252 33-605",
+                            "3:00-4:00": "INT252 33-605",
+                            "4:00-5:00": "PEV301 33-605"
+                        }
+                    }
+                },
+                aryan1: {
+                    name: "Aryan Raj Lambu",
+                    timetable: {
+                        monday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "No class",
+                            "11:00-12:00": "No class",
+                            "12:00-1:00": "PEV301 33-601",
+                            "1:00-2:00": "PEV301 33-601",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "No class",
+                            "4:00-5:00": "No class"
+                        },
+                        tuesday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "INT252 33-505X",
+                            "11:00-12:00": "INT252 33-505X",
+                            "12:00-1:00": "IXD801 37-902",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "PEV301 37-905",
+                            "4:00-5:00": "PEV301 37-905"
+                        },
+                        wednesday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "INT222 33-504",
+                            "11:00-12:00": "INT222 33-504",
+                            "12:00-1:00": "IXD801 37-902",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "No class",
+                            "4:00-5:00": "No class"
+                        },
+                        thursday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "INT252 33-503",
+                            "11:00-12:00": "INT252 33-503",
+                            "12:00-1:00": "IXD801 37-902",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "PEAS05 38-717",
+                            "3:00-4:00": "PEAS05 38-717",
+                            "4:00-5:00": "No class"
+                        },
+                        friday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "INT222 33-505",
+                            "11:00-12:00": "INT222 33-505",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "No class",
+                            "4:00-5:00": "No class"
+                        }
+                    }
+                },
+                aryan2: {
+                    name: "Aryan Aimless",
+                    timetable: {
+                        monday: {
+                            "9:00-10:00": "INT252 36-502",
+                            "10:00-11:00": "INT252 36-502",
+                            "11:00-12:00": "PEV301 36-502",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "No class",
+                            "4:00-5:00": "No class"
+                        },
+                        tuesday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "INT222 36-502A",
+                            "11:00-12:00": "INT222 36-502A",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "IXD801 37-903",
+                            "2:00-3:00": "INT252 36-501",
+                            "3:00-4:00": "INT252 36-501",
+                            "4:00-5:00": "No class"
+                        },
+                        wednesday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "PEV301 36-909",
+                            "11:00-12:00": "No class",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "IXD801 37-903",
+                            "2:00-3:00": "INT222 36-401",
+                            "3:00-4:00": "INT222 36-401",
+                            "4:00-5:00": "No class"
+                        },
+                        thursday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "No class",
+                            "11:00-12:00": "No class",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "IXD801 37-903",
+                            "2:00-3:00": "PEV301 37-904",
+                            "3:00-4:00": "PEV301 37-904",
+                            "4:00-5:00": "No class"
+                        },
+                        friday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "No class",
+                            "11:00-12:00": "No class",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "No class",
+                            "4:00-5:00": "No class"
+                        }
+                    }
+                },
+                shambhu: {
+                    name: "Shambhudhan Pal",
+                    timetable: {
+                        monday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "No class",
+                            "11:00-12:00": "No class",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "INT252 36-502A",
+                            "2:00-3:00": "INT252 36-502A",
+                            "3:00-4:00": "INT222 36-502A",
+                            "4:00-5:00": "INT222 36-502A"
+                        },
+                        tuesday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "PEAS05 37-906",
+                            "11:00-12:00": "PEAS05 37-906",
+                            "12:00-1:00": "FIN212 37-709",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "No class",
+                            "4:00-5:00": "No class"
+                        },
+                        wednesday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "No class",
+                            "11:00-12:00": "No class",
+                            "12:00-1:00": "FIN212 37-709",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "PEV301 37-701",
+                            "3:00-4:00": "INT222 37-701",
+                            "4:00-5:00": "INT222 37-701"
+                        },
+                        thursday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "No class",
+                            "11:00-12:00": "No class",
+                            "12:00-1:00": "FIN212 37-709",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "PEV301 33-602",
+                            "4:00-5:00": "PEV301 33-602"
+                        },
+                        friday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "No class",
+                            "11:00-12:00": "No class",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "INT252 33-605",
+                            "3:00-4:00": "INT252 33-605",
+                            "4:00-5:00": "PEV301 33-605"
+                        }
+                    }
+                },
+                rohan: {
+                    name: "Rohan",
+                    timetable: {
+                        monday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "INT222 37-706",
+                            "11:00-12:00": "INT222 37-706",
+                            "12:00-1:00": "PEV301 37-706",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "No class",
+                            "4:00-5:00": "No class"
+                        },
+                        tuesday: {
+                            "9:00-10:00": "INT222 37-706",
+                            "10:00-11:00": "INT222 37-706",
+                            "11:00-12:00": "No class",
+                            "12:00-1:00": "CAP818 37-910",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "PEAS05 27-103",
+                            "4:00-5:00": "PEAS05 27-103"
+                        },
+                        wednesday: {
+                            "9:00-10:00": "PEV301 37-706",
+                            "10:00-11:00": "PEV301 37-706",
+                            "11:00-12:00": "INT252 37-706",
+                            "12:00-1:00": "INT252 37-706",
+                            "1:00-2:00": "CAP818 37-910",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "No class",
+                            "4:00-5:00": "No class"
+                        },
+                        thursday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "No class",
+                            "11:00-12:00": "No class",
+                            "12:00-1:00": "CAP818 37-910",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "No class",
+                            "4:00-5:00": "No class"
+                        },
+                        friday: {
+                            "9:00-10:00": "PEV301 37-706",
+                            "10:00-11:00": "INT252 37-706",
+                            "11:00-12:00": "INT252 37-706",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "No class",
+                            "4:00-5:00": "No class"
+                        }
+                    }
+                },
+                prateek: {
+                    name: "Prateek Ray",
+                    timetable: {
+                        monday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "No class",
+                            "11:00-12:00": "INT234 37-602",
+                            "12:00-1:00": "INT234 37-602",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "No class",
+                            "4:00-5:00": "No class"
+                        },
+                        tuesday: {
+                            "9:00-10:00": "INT234 37-602",
+                            "10:00-11:00": "INT234 37-602",
+                            "11:00-12:00": "PEV301 37-602",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "No class",
+                            "4:00-5:00": "No class"
+                        },
+                        wednesday: {
+                            "9:00-10:00": "PEV301 37-602",
+                            "10:00-11:00": "PEV301 37-602",
+                            "11:00-12:00": "No class",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "SPA107 34-502A",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "No class",
+                            "4:00-5:00": "No class"
+                        },
+                        thursday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "No class",
+                            "11:00-12:00": "PEV301 37-602",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "SPA107 34-502A",
+                            "2:00-3:00": "INT374 37-707",
+                            "3:00-4:00": "INT374 37-707",
+                            "4:00-5:00": "No class"
+                        },
+                        friday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "INT374 37-602",
+                            "11:00-12:00": "INT374 37-602",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "SPA107 34-502A",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "No class",
+                            "4:00-5:00": "No class"
+                        }
+                    }
+                },
+                chainti: {
+                    name: "Pathlawath Chainti",
+                    timetable: {
+                        monday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "No class",
+                            "11:00-12:00": "No class",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "PEV301 36-505",
+                            "2:00-3:00": "PEV301 36-505",
+                            "3:00-4:00": "No class",
+                            "4:00-5:00": "No class"
+                        },
+                        tuesday: {
+                            "9:00-10:00": "INT364 37-802",
+                            "10:00-11:00": "INT364 37-802",
+                            "11:00-12:00": "PEV301 37-802",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "No class",
+                            "4:00-5:00": "No class"
+                        },
+                        wednesday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "INT363 37-802",
+                            "11:00-12:00": "INT363 37-802",
+                            "12:00-1:00": "PSY291 37-601",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "PEV301 37-702",
+                            "3:00-4:00": "No class",
+                            "4:00-5:00": "No class"
+                        },
+                        thursday: {
+                            "9:00-10:00": "INT363 37-603",
+                            "10:00-11:00": "INT363 37-603",
+                            "11:00-12:00": "INT364 38-806",
+                            "12:00-1:00": "INT364 38-806",
+                            "1:00-2:00": "PSY291 37-601",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "PEAS05 38-903",
+                            "4:00-5:00": "PEAS05 38-903"
+                        },
+                        friday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "No class",
+                            "11:00-12:00": "No class",
+                            "12:00-1:00": "PSY291 37-601",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "No class",
+                            "4:00-5:00": "No class"
+                        }
+                    }
+                },
+                adarsh: {
+                    name: "Adarsh",
+                    timetable: {
+                        monday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "No class",
+                            "11:00-12:00": "No class",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "INT234 37-711",
+                            "3:00-4:00": "INT234 37-711",
+                            "4:00-5:00": "No class"
+                        },
+                        tuesday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "INT374 38-912",
+                            "11:00-12:00": "INT374 38-912",
+                            "12:00-1:00": "MKT311 37-802",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "No class",
+                            "3:00-4:00": "PEAS05 27-103",
+                            "4:00-5:00": "PEAS05 27-103"
+                        },
+                        wednesday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "PEV301 27-303",
+                            "11:00-12:00": "PEV301 27-303",
+                            "12:00-1:00": "MKT311 37-802",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "PEV301 37-711",
+                            "3:00-4:00": "INT374 37-711",
+                            "4:00-5:00": "INT374 37-711"
+                        },
+                        thursday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "No class",
+                            "11:00-12:00": "No class",
+                            "12:00-1:00": "MKT311 37-802",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "INT234 37-710",
+                            "3:00-4:00": "INT234 37-710",
+                            "4:00-5:00": "No class"
+                        },
+                        friday: {
+                            "9:00-10:00": "No class",
+                            "10:00-11:00": "No class",
+                            "11:00-12:00": "No class",
+                            "12:00-1:00": "No class",
+                            "1:00-2:00": "No class",
+                            "2:00-3:00": "PEV301 37-711",
+                            "3:00-4:00": "No class",
+                            "4:00-5:00": "No class"
+                        }
+                    }
+                },
+            };
+            
+            // Function to detect if a time slot should be marked as "Free" (between classes)
+            function shouldBeFreeSlot(dayTimetable, timeSlot) {
+                // If it's explicitly "No class", it's free
+                if (dayTimetable[timeSlot] === "No class") {
+                    return true;
+                }
+                
+                // Get all time slots for the day
+                const timeSlots = Object.keys(dayTimetable);
+                const currentIndex = timeSlots.indexOf(timeSlot);
+                
+                // If it's the first or last slot and has no class, it's free
+                if ((currentIndex === 0 || currentIndex === timeSlots.length - 1) && 
+                    dayTimetable[timeSlot] === "No class") {
+                    return true;
+                }
+                
+                // If it's between two classes and has no class, it's free
+                if (currentIndex > 0 && currentIndex < timeSlots.length - 1) {
+                    const prevSlot = timeSlots[currentIndex - 1];
+                    const nextSlot = timeSlots[currentIndex + 1];
+                    
+                    if (dayTimetable[timeSlot] === "No class" && 
+                        dayTimetable[prevSlot] !== "No class" && 
+                        dayTimetable[nextSlot] !== "No class") {
+                        return true;
+                    }
+                }
+                
+                return false;
+            }
+            
+            // Function to update timetable based on selected friend and day
+            function updateTimetable(friendId, day) {
+                timetableContainer.innerHTML = '';
+                
+                if (!friendId) {
+                    timetableContainer.innerHTML = '<div class="no-friends">Please select a friend to view their timetable</div>';
+                    return;
+                }
+                
+                const friend = friendsData[friendId];
+                const dayTimetable = friend.timetable[day];
+                
+                for (const [timeSlot, activity] of Object.entries(dayTimetable)) {
+                    const timeLabel = document.createElement('div');
+                    timeLabel.className = 'time-label';
+                    timeLabel.textContent = timeSlot;
+                    
+                    const slot = document.createElement('div');
+                    
+                    // Use the new function to determine if it should be marked as free
+                    const isFree = shouldBeFreeSlot(dayTimetable, timeSlot);
+                    slot.className = `slot ${isFree ? 'free' : 'busy'}`;
+                    slot.textContent = isFree ? "Free" : activity;
+                    
+                    timetableContainer.appendChild(timeLabel);
+                    timetableContainer.appendChild(slot);
+                }
+            }
+            
+            // Function to find friends who are free at the current time
+            function findFreeFriends() {
+                friendsList.innerHTML = '';
+                
+                const currentHour = currentTime.getHours();
+                let currentSlot = "";
+                
+                if (currentHour >= 9 && currentHour < 10) currentSlot = "9:00-10:00";
+                else if (currentHour >= 10 && currentHour < 11) currentSlot = "10:00-11:00";
+                else if (currentHour >= 11 && currentHour < 12) currentSlot = "11:00-12:00";
+                else if (currentHour >= 12 && currentHour < 13) currentSlot = "12:00-1:00";
+                else if (currentHour >= 13 && currentHour < 14) currentSlot = "1:00-2:00";
+                else if (currentHour >= 14 && currentHour < 15) currentSlot = "2:00-3:00";
+                else if (currentHour >= 15 && currentHour < 16) currentSlot = "3:00-4:00";
+                else if (currentHour >= 16 && currentHour < 17) currentSlot = "4:00-5:00";
+                else currentSlot = "Outside college hours";
+                
+                let freeFriendsCount = 0;
+                
+                for (const friendId in friendsData) {
+                    const friend = friendsData[friendId];
+                    const dayTimetable = friend.timetable[currentDay];
+                    
+                    // Use the new function to determine if they're free
+                    if (dayTimetable && shouldBeFreeSlot(dayTimetable, currentSlot)) {
+                        freeFriendsCount++;
+                        
+                        const friendItem = document.createElement('div');
+                        friendItem.className = 'friend-item';
+                        
+                        const firstLetter = friend.name.charAt(0);
+                        
+                        friendItem.innerHTML = `
+                            <div class="avatar">${firstLetter}</div>
+                            <div class="friend-info">
+                                <div class="friend-name">${friend.name}</div>
+                                <div class="free-now">
+                                    <i class="fas fa-check-circle"></i> Free until ${getEndTime(currentSlot)}
+                                </div>
+                            </div>
+                        `;
+                        
+                        friendsList.appendChild(friendItem);
+                    }
+                }
+                
+                if (freeFriendsCount === 0) {
+                    friendsList.innerHTML = '<div class="no-friends">No friends are free right now. Try another time!</div>';
+                }
+            }
+            
+            // Helper function to extract end time from time slot
+            function getEndTime(timeSlot) {
+                if (timeSlot === "Outside college hours") return "tomorrow";
+                return timeSlot.split('-')[1];
+            }
+            
+            // Event listeners
+            friendSelect.addEventListener('change', function() {
+                if (this.value) {
+                    updateTimetable(this.value, currentDay);
+                } else {
+                    updateTimetable(null, currentDay);
+                }
+            });
+            
+            dayButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Update active day button
+                    dayButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update current day
+                    currentDay = this.dataset.day;
+                    currentDayDisplay.textContent = `${this.textContent} Schedule`;
+                    
+                    // Update timetable if a friend is selected
+                    if (friendSelect.value) {
+                        updateTimetable(friendSelect.value, currentDay);
+                    }
+                });
+            });
+            
+            findFriendsBtn.addEventListener('click', findFreeFriends);
+            
+            // Initialize the app
+            updateTimetable(null, currentDay);
+        });
+    </script>
+</body>
+</html>
